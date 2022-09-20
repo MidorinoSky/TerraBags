@@ -662,16 +662,11 @@ def open_bag():
         show_list.extend([116, 125])
         counts[116] += 1
         counts[125] += 1
-        res_text = "".join(("获得：", weapon, emblem, "，神锤，恶魔之心\n"))
+        res_text = "".join(("获得：", weapon, "，", emblem, "，神锤，恶魔之心\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
         display_rank()
         show_last_items(show_list)
-
-
-"""def get_dict_key(dic, value):
-    key = list(dic.keys())[list(dic.values()).index(value)]
-    return key"""
 
 
 def clear_interface():
