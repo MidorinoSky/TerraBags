@@ -1,0 +1,3 @@
+pipenv shell
+
+pyinstaller -F -w -i "D:\Documents\Python Scripts\TerraBags\bag.ico" "D:\Documents\Python Scripts\TerraBags\ttk.py" --distpath="D:\Documents\Python Scripts\TerraBags"
