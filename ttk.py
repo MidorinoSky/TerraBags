@@ -4,7 +4,6 @@ from ttkbootstrap.constants import *
 import ttkbootstrap as ttk
 from ctypes import windll
 from random import randint, random
-from pandas import DataFrame
 
 moon_lord_list = {
     0: "彩虹猫之刃",
@@ -274,44 +273,92 @@ def window_setup():
     )
     rb_group.pack(fill=BOTH, side=TOP, expand=YES)
 
-    grid_frame = ttk.Frame(master=rb_group, padding=5)
-    grid_frame.pack(fill=BOTH, anchor=CENTER, expand=YES)
+    nb = ttk.Notebook(master=rb_group)
+    nb.pack(anchor=N, fill=X, expand=YES, pady=3)
+    pre_hm_frame = ttk.Frame(nb)
+    pre_hm_frame.pack(expand=YES)
+    hm_frame = ttk.Frame(nb)
+    hm_frame.pack(expand=YES)
+    all_boss_frame = ttk.Frame(nb)
+    all_boss_frame.pack(expand=YES)
+    nb.add(pre_hm_frame, text="困难模式前", sticky=W)
+    nb.add(hm_frame, text="困难模式后", sticky=W)
+    nb.add(all_boss_frame, text="全部", sticky=W)
 
     boss_var = ttk.IntVar(root, 1)  # 单选按钮的变量
-    values = {"月亮领主": 1,
-              "光之女皇": 2,
-              "石巨人": 3,
-              "世纪之花": 4,
-              "猪龙鱼公爵": 5,
-              "双足翼龙": 6,
-              "史莱姆皇后": 7,
-              "史莱姆王": 8,
-              "克苏鲁之眼": 9,
-              "世界吞噬者": 10,
-              "克苏鲁之脑": 11,
-              "蜂王": 12,
-              "骷髅王": 13,
-              "独眼巨鹿": 14,
-              "血肉之墙": 15,
-              }
+    values_hm = {
+        "月亮领主": 1,
+        "光之女皇": 2,
+        "石巨人": 3,
+        "世纪之花": 4,
+        "猪龙鱼公爵": 5,
+        "双足翼龙": 6,
+        "史莱姆皇后": 7,
+    }
+    values_phm = {
+        "史莱姆王": 8,
+        "克苏鲁之眼": 9,
+        "世界吞噬者": 10,
+        "克苏鲁之脑": 11,
+        "蜂王": 12,
+        "骷髅王": 13,
+        "独眼巨鹿": 14,
+        "血肉之墙": 15,
+    }
+
+    """------------------------------------------"""
+    """所有、肉前、肉后"""
+    grid_frame = ttk.Frame(master=all_boss_frame, padding=5)
+    grid_frame.pack(fill=BOTH, anchor=CENTER, expand=YES)
     for i in range(15):
         img_file = "interface/" + str(i + 1) + ".png"
         img = PhotoImage(file=img_file)
         label = ttk.Label(master=grid_frame, image=img)
-        if i < 8:
+        if i < 7:
             label.grid(row=i, column=0, padx=10, pady=8)
             label.image = img
-        if i >= 8:
-            label.grid(row=i - 8, column=2, padx=10, pady=8)
+        if i >= 7:
+            label.grid(row=i - 7, column=2, padx=10, pady=8)
             label.image = img
     k = 0
-    for (text, value) in values.items():
+    all_values = dict(values_hm, **values_phm)
+    for (text, value) in all_values.items():
         rb = ttk.Radiobutton(master=grid_frame, text=text, variable=boss_var, value=value)
-        if k < 8:
+        if k < 7:
             rb.grid(row=k, column=1, sticky=W, padx=5)
-        if k >= 8:
-            rb.grid(row=k - 8, column=3, sticky=W, padx=5)
+        if k >= 7:
+            rb.grid(row=k - 7, column=3, sticky=W, padx=5)
         k += 1
+
+    grid_pre_hm = ttk.Frame(master=pre_hm_frame, padding=5)
+    grid_pre_hm.pack(fill=BOTH, anchor=CENTER, expand=YES)
+    for i in range(7, 15):
+        img_file = "interface/"+str(i+1)+".png"
+        img = PhotoImage(file=img_file)
+        label = ttk.Label(master=grid_pre_hm, image=img)
+        label.grid(row=i-7, column=0, padx=10, pady=8)
+        label.image = img
+    k = 0
+    for (text, value) in values_phm.items():
+        rb = ttk.Radiobutton(master=grid_pre_hm, text=text, variable=boss_var, value=value)
+        rb.grid(row=k, column=1, sticky=W, padx=5)
+        k += 1
+
+    grid_hm = ttk.Frame(master=hm_frame, padding=5)
+    grid_hm.pack(fill=BOTH, anchor=CENTER, expand=YES)
+    for i in range(7):
+        img_file = "interface/" + str(i + 1) + ".png"
+        img = PhotoImage(file=img_file)
+        label = ttk.Label(master=grid_hm, image=img)
+        label.grid(row=i, column=0, padx=10, pady=8)
+        label.image = img
+    k = 0
+    for (text, value) in values_hm.items():
+        rb = ttk.Radiobutton(master=grid_hm, text=text, variable=boss_var, value=value)
+        rb.grid(row=k, column=1, sticky=W, padx=5)
+        k += 1
+
+    """------------------------------------------"""
 
     button_frame = ttk.Frame(master=lframe, padding=5)
     button_frame.pack(anchor=CENTER, expand=YES)
@@ -356,19 +403,23 @@ def window_setup():
 
 
 def display_rank():
-    df_count = DataFrame(all_names)
-    df_count["num"] = counts
-    df_sorted = df_count.sort_values(by="num", ascending=False).head(n=20)
-    rank_table = [tuple(x) for x in df_sorted.values]
-
+    item_dict = dict(zip(all_names, counts))
+    item_rank = sorted(item_dict.items(), key=lambda x: x[1], reverse=True)
     for item in tv.get_children():
         tv.delete(item)
 
-    for item in rank_table:
+    for item in item_rank:
         if item[1] != 0:
             tv.insert("", END, values=item)
         else:
             continue
+
+
+def get_multiple_items(amount, item_id, show_list):
+    counts[item_id] += amount
+    show_list.append(item_id)
+    text = "".join(("，", all_names[item_id], "*", str(amount)))
+    return text
 
 
 def item_prob(x, p, item_id, show_list):
@@ -380,25 +431,24 @@ def item_prob(x, p, item_id, show_list):
     return item_name
 
 
-def item_chosen(a, b, show_list):
-    item_id = randint(a, b)
-    item_name = all_names[item_id]
-    counts[item_id] += 1
-    show_list.append(item_id)
-    return item_name
-
-
-def item_chosen_two(a, b, show_list):
-    item_id = randint(a, b)
-    item2_id = item_id
-    while item2_id == item_id:
-        item2_id = randint(a, b)
-    counts[item_id] += 1
-    counts[item2_id] += 1
-    show_list.extend([item_id, item2_id])
-    name1 = all_names[item_id]
-    name2 = "，" + all_names[item2_id]
-    return name1 + name2
+def choose_items(a, b, show_list, num=1):
+    if num == 1:
+        item_id = randint(a, b)
+        item_name = all_names[item_id]
+        counts[item_id] += 1
+        show_list.append(item_id)
+        return item_name
+    if num == 2:
+        item_id = randint(a, b)
+        item2_id = item_id
+        while item2_id == item_id:
+            item2_id = randint(a, b)
+        counts[item_id] += 1
+        counts[item2_id] += 1
+        show_list.extend([item_id, item2_id])
+        name1 = all_names[item_id]
+        name2 = "，" + all_names[item2_id]
+        return name1 + name2
 
 
 def get_dev_item(show_list):
@@ -425,20 +475,17 @@ def show_last_items(list1):
 
 def open_bag():
     if boss_var.get() == 1:
-        ores = randint(70, 90)
-        counts[10] += ores
-        r2 = random()
         show_list = []
-        weapon = item_chosen(0, 8, show_list)
-        cart = item_prob(r2, 0.1, 9, show_list)
-        show_list.append(10)
+        weapon = choose_items(0, 8, show_list)
+        luminites = get_multiple_items(randint(70, 90), 10, show_list)
+        cart = item_prob(random(), 0.1, 9, show_list)
         starboard = item_prob(0, 1, 127, show_list)
         portal_gun = item_prob(0, 1, 128, show_list)
         gravity_globe = item_prob(0, 1, 129, show_list)
         tentacle = item_prob(0, 1, 130, show_list)
         dev_item = get_dev_item(show_list)
 
-        res_text = "".join(("获得：", weapon, "，夜明矿*", str(ores),
+        res_text = "".join(("获得：", weapon, luminites,
                             cart, starboard, portal_gun, gravity_globe, tentacle,
                             dev_item, "\n"))
         txt.insert(END, res_text)
@@ -448,11 +495,10 @@ def open_bag():
 
     if boss_var.get() == 2:
         show_list = []
-        weapon = item_chosen(11, 14, show_list)
-        r2, r3, r4 = random(), random(), random()
-        wing = item_prob(r2, 0.1, 15, show_list)
-        guitar = item_prob(r3, 0.05, 16, show_list)
-        rainbow_cursor = item_prob(r4, 0.05, 17, show_list)
+        weapon = choose_items(11, 14, show_list)
+        wing = item_prob(random(), 0.1, 15, show_list)
+        guitar = item_prob(random(), 0.05, 16, show_list)
+        rainbow_cursor = item_prob(random(), 0.05, 17, show_list)
         insignia = item_prob(0, 1, 131, show_list)
         dev_item = get_dev_item(show_list)
         res_text = "".join(("获得：", weapon, wing, guitar, rainbow_cursor, insignia, dev_item, "\n"))
@@ -463,15 +509,12 @@ def open_bag():
 
     if boss_var.get() == 3:
         show_list = []
-        weapon = item_chosen(18, 24, show_list)
-        r2 = random()
-        picksaw = item_prob(r2, 1 / 3, 25, show_list)
+        weapon = choose_items(18, 24, show_list)
+        picksaw = item_prob(random(), 1 / 3, 25, show_list)
         shiny = item_prob(0, 1, 132, show_list)
-        husks = randint(18, 23)
-        counts[133] += husks
-        show_list.append(133)
+        husks = get_multiple_items(randint(18, 23), 133, show_list)
         dev_item = get_dev_item(show_list)
-        res_text = "".join(("获得：", weapon, picksaw, shiny, "，甲虫外壳*", str(husks),
+        res_text = "".join(("获得：", weapon, picksaw, shiny, husks,
                             dev_item, "\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
@@ -480,12 +523,11 @@ def open_bag():
 
     if boss_var.get() == 4:
         show_list = []
-        weapon = item_chosen(26, 32, show_list)
-        r2, r3, r4 = random(), random(), random()
-        pygmy = item_prob(r2, 0.5, 33, show_list)
-        axe = item_prob(r3, 0.05, 34, show_list)
+        weapon = choose_items(26, 32, show_list)
+        pygmy = item_prob(random(), 0.5, 33, show_list)
+        axe = item_prob(random(), 0.05, 34, show_list)
         seedling = item_prob(random(), 1 / 15, 136, show_list)
-        hook = item_prob(r4, 0.1, 35, show_list)
+        hook = item_prob(random(), 0.1, 35, show_list)
         sac = item_prob(0, 1, 134, show_list)
         key = item_prob(0, 1, 135, show_list)
         dev_item = get_dev_item(show_list)
@@ -497,9 +539,8 @@ def open_bag():
 
     if boss_var.get() == 5:
         show_list = []
-        weapon = item_chosen(36, 40, show_list)
-        r2 = random()
-        wing = item_prob(r2, 1 / 15, 41, show_list)
+        weapon = choose_items(36, 40, show_list)
+        wing = item_prob(random(), 1 / 15, 41, show_list)
         truffle = item_prob(0, 1, 137, show_list)
         dev_item = get_dev_item(show_list)
         res_text = "".join(("获得：", weapon, wing, truffle, dev_item, "\n"))
@@ -509,32 +550,28 @@ def open_bag():
         show_last_items(show_list)
 
     if boss_var.get() == 6:
-        show_list = [60]
-        medals = randint(30, 49)
-        counts[60] += medals
-        weapon = item_chosen(62, 65, show_list)
-        r2 = random()
-        wing = item_prob(r2, 0.25, 61, show_list)
+        show_list = []
+        weapon = choose_items(62, 65, show_list)
+        medals = get_multiple_items(randint(30, 49), 60, show_list)
+        wing = item_prob(random(), 0.25, 61, show_list)
         dev_item = get_dev_item(show_list)
-        res_text = "".join(("获得：", weapon, "，护卫奖章*", str(medals), wing, dev_item, "\n"))
+        res_text = "".join(("获得：", weapon, medals, wing, dev_item, "\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
         display_rank()
         show_last_items(show_list)
 
     if boss_var.get() == 7:
-        balloons = randint(25, 74)
-        counts[66] += balloons
-        show_list = [66]
+        show_list = []
+        armor = choose_items(67, 69, show_list, num=2)
+        staff = item_prob(random(), 1 / 3, 70, show_list)
+        pillion = item_prob(random(), 0.5, 71, show_list)
+        hook = item_prob(random(), 0.5, 72, show_list)
+        balloons = get_multiple_items(randint(25, 74), 66, show_list)
         gelatin = item_prob(0, 1, 138, show_list)
-        armor = item_chosen_two(67, 69, show_list)
-        r2, r3, r4 = random(), random(), random()
-        staff = item_prob(r2, 1 / 3, 70, show_list)
-        pillion = item_prob(r3, 0.5, 71, show_list)
-        hook = item_prob(r4, 0.5, 72, show_list)
         dev_item = get_dev_item(show_list)
         res_text = "".join(("获得：", armor, staff, pillion, hook,
-                            "，闪耀史莱姆气球*", str(balloons), gelatin, dev_item, "\n"))
+                            balloons, gelatin, dev_item, "\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
         display_rank()
@@ -542,11 +579,10 @@ def open_bag():
 
     if boss_var.get() == 8:
         show_list = []
-        armor = item_chosen_two(75, 77, show_list)
-        r2, r3, r4 = random(), random(), random()
-        saddle = item_prob(r2, 0.5, 74, show_list)
-        gun = item_prob(r3, 0.5, 78, show_list)
-        hook = item_prob(r4, 0.5, 79, show_list)
+        armor = choose_items(75, 77, show_list, num=2)
+        saddle = item_prob(random(), 0.5, 74, show_list)
+        gun = item_prob(random(), 0.5, 78, show_list)
+        hook = item_prob(random(), 0.5, 79, show_list)
         gel = item_prob(0, 1, 73, show_list)
         res_text = "".join(("获得：", armor, saddle, gun, hook, gel, "\n"))
         txt.insert(END, res_text)
@@ -557,17 +593,11 @@ def open_bag():
     if boss_var.get() == 9:
         show_list = [80]
         counts[80] += 1
-        r2 = random()
-        scope = item_prob(r2, 1 / 30, 81, show_list)
-        show_list.extend([82, 83, 84])
-        ores, arrows, seeds = randint(30, 90), randint(20, 50), randint(1, 3)
-        counts[82] += ores
-        counts[83] += arrows
-        counts[84] += seeds
-        res_text = "".join(("获得：", "克苏鲁之盾", scope, "，魔矿*", str(ores),
-                            "，邪箭*", str(arrows),
-                            "，腐化种子*", str(seeds),
-                            "\n"))
+        scope = item_prob(random(), 1 / 30, 81, show_list)
+        demonites = get_multiple_items(randint(30, 90), 82, show_list)
+        arrows = get_multiple_items(randint(20, 50), 83, show_list)
+        seeds = get_multiple_items(randint(1, 3), 84, show_list)
+        res_text = "".join(("获得：", "克苏鲁之盾", scope, demonites, arrows, seeds, "\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
         display_rank()
@@ -576,14 +606,10 @@ def open_bag():
     if boss_var.get() == 10:
         show_list = [85]
         counts[85] += 1
-        r2 = random()
-        bone = item_prob(r2, 0.05, 87, show_list)
-        show_list.extend([82, 86])
-        ores, scales = randint(30, 59), randint(10, 19)
-        counts[82] += ores
-        counts[86] += scales
-        res_text = "".join(("获得：蠕虫围巾", bone, "，魔矿*", str(ores),
-                            "，暗影鳞片*", str(scales), "\n"))
+        bone = item_prob(random(), 0.05, 87, show_list)
+        demonites = get_multiple_items(randint(30, 59), 82, show_list)
+        scales = get_multiple_items(randint(10, 19), 86, show_list)
+        res_text = "".join(("获得：蠕虫围巾", bone, demonites, scales, "\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
         display_rank()
@@ -592,14 +618,10 @@ def open_bag():
     if boss_var.get() == 11:
         show_list = [88]
         counts[88] += 1
-        r2 = random()
-        bone = item_prob(r2, 0.05, 91, show_list)
-        show_list.extend([89, 90])
-        ores, samples = randint(40, 90), randint(10, 19)
-        counts[82] += ores
-        counts[86] += samples
-        res_text = "".join(("获得：混乱之脑", bone, "，猩红矿*", str(ores),
-                            "，组织样本*", str(samples), "\n"))
+        bone = item_prob(random(), 0.05, 91, show_list)
+        ores = get_multiple_items(randint(40, 90), 89, show_list)
+        samples = get_multiple_items(randint(10, 19), 90, show_list)
+        res_text = "".join(("获得：混乱之脑", bone, ores, samples, "\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
         display_rank()
@@ -607,21 +629,17 @@ def open_bag():
 
     if boss_var.get() == 12:
         show_list = []
-        weapon = item_chosen(93, 95, show_list)
-        vanity = item_chosen_two(100, 102, show_list)
+        weapon = choose_items(93, 95, show_list)
+        vanity = choose_items(100, 102, show_list, num=2)
         comb = item_prob(random(), 1 / 3, 96, show_list)
         nectar = item_prob(random(), 1 / 9, 97, show_list)
         goggles = item_prob(random(), 1 / 9, 98, show_list)
         hivepack = item_prob(0, 1, 92, show_list)
         wand = item_prob(0, 1, 99, show_list)
-        show_list.extend([103, 104])
-        beenades = randint(10, 29)
-        counts[103] += beenades
-        wax = randint(17, 29)
-        counts[104] += wax
-        res_text = "".join(("获得：", weapon, "，", vanity, comb, nectar, goggles, hivepack, wand,
-                            "，蜜蜂手榴弹*", str(beenades),
-                            "，蜂蜡*", str(wax),
+        beenades = get_multiple_items(randint(10, 29), 103, show_list)
+        wax = get_multiple_items(randint(17, 29), 104, show_list)
+        res_text = "".join(("获得：", weapon, "，", vanity, comb, nectar, goggles,
+                            hivepack, wand, beenades, wax,
                             "\n"))
         txt.insert(END, res_text)
         txt.yview_moveto(1)
@@ -644,7 +662,7 @@ def open_bag():
 
     if boss_var.get() == 14:
         show_list = []
-        weapon = item_chosen(112, 115, show_list)
+        weapon = choose_items(112, 115, show_list)
         helmet = item_prob(0, 1, 108, show_list)
         eye_bone = item_prob(random(), 1 / 3, 109, show_list)
         umbrella = item_prob(random(), 1 / 3, 110, show_list)
@@ -657,8 +675,8 @@ def open_bag():
 
     if boss_var.get() == 15:
         show_list = []
-        weapon = item_chosen(121, 124, show_list)
-        emblem = item_chosen(117, 120, show_list)
+        weapon = choose_items(121, 124, show_list)
+        emblem = choose_items(117, 120, show_list)
         show_list.extend([116, 125])
         counts[116] += 1
         counts[125] += 1
