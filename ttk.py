@@ -476,7 +476,7 @@ def show_last_items(id_list):
         CreateToolTip(item_labels[k], all_names[item_id])
 
     for j in range(len(id_list), 11):
-        item_labels[j].config(image="")
+        item_labels[j].configure(image="")
         item_labels[j].children.clear()
         HideToolTip(item_labels[j])
 
