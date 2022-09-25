@@ -1,7 +1,8 @@
-from tkinter import PhotoImage
+from ttkbootstrap import PhotoImage
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 import ttkbootstrap as ttk
+from tooltip import CreateToolTip, HideToolTip
 from ctypes import windll
 from random import randint, random
 
@@ -219,7 +220,7 @@ counts = [0] * len(all_names)
 
 
 def window_setup():
-    global boss_var, txt, tv, fr
+    global boss_var, txt, tv, fr, item_labels
     windll.shcore.SetProcessDpiAwareness(1)  # 适应高dpi
     root = Style(theme="minty").master
 
@@ -391,11 +392,15 @@ def window_setup():
     tv.pack(side=TOP, anchor=W, fill=BOTH, pady=5, expand=YES)
 
     icons_frame = ttk.Labelframe(master=res_group, text="最后获取的物品", padding=5)
-    icons_frame.pack(fill=BOTH, expand=YES, pady=0, side=BOTTOM, anchor=W, ipady=55)
+    icons_frame.pack(fill=X, expand=YES, pady=0, side=BOTTOM, anchor=W, ipady=55)
     icons_frame.pack_propagate(0)
     fr = ttk.Frame(master=icons_frame)
     fr.pack(side=LEFT, anchor=W)
     fr.pack_propagate(0)
+
+    item_labels = [ttk.Label(master=fr, image="", width=2) for j in range(11)]
+    for i, l in enumerate(item_labels):
+        l.grid(row=0, column=i, padx=10, pady=4, sticky=W)
 
     root.after(0, update, 0)
 
@@ -463,14 +468,17 @@ def get_dev_item(show_list):
     return dev_item
 
 
-def show_last_items(list1):
-    fr.children.clear()
-    for i, item in enumerate(list1):
-        img = PhotoImage(file="item/" + str(item) + ".png")
-        label = ttk.Label(master=fr, image=img)
-        label.grid(row=0, column=i, padx=10, ipady=5, sticky=W)
-        label.grid_propagate(0)
-        label.image = img
+def show_last_items(id_list):
+    for k, item_id in enumerate(id_list):
+        icon = PhotoImage(file="item/"+str(item_id)+".png")
+        item_labels[k].configure(image=icon)
+        item_labels[k].image = icon
+        CreateToolTip(item_labels[k], all_names[item_id])
+
+    for j in range(len(id_list), 11):
+        item_labels[j].config(image="")
+        item_labels[j].children.clear()
+        HideToolTip(item_labels[j])
 
 
 def open_bag():
