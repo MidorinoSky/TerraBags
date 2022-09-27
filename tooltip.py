@@ -42,7 +42,7 @@ def CreateToolTip(widget, text):
     def leave(event):
         toolTip.hidetip()
 
-    widget.bind('<Enter>', enter)  
+    widget.bind('<Enter>', enter)
     widget.bind('<Leave>', leave)
 
 
