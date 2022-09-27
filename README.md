@@ -12,3 +12,9 @@
  添加了肉前肉后的分类
  
  ![Preview](https://user-images.githubusercontent.com/106237365/191667190-a6b22038-2355-4db5-a045-52d40f9902b4.gif)
+ 
+ # 2022.9.27 更新
+添加事件boss，添加鼠标悬浮时显示物品名称，添加更改宠物功能。
+
+![bag927](https://user-images.githubusercontent.com/106237365/192512456-f9ecf845-fccb-48dc-9d79-34b7735956e4.png)
+
