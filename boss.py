@@ -292,43 +292,6 @@ def mini_boss_setup(widget):
         rb.grid(row=k, column=1, sticky=W, padx=5)
         k += 1
 
-    """------------------------------------------------------"""
-    """右侧界面"""
-    """
-    rframe = ttk.Frame(widget, padding=5)
-    rframe.pack(side=RIGHT, fill=BOTH, expand=YES)
-
-    res_group = ttk.Labelframe(
-        rframe, text="获取的物品", padding=10
-    )
-    res_group.pack(fill=BOTH, ipady=10, side=TOP, expand=YES)
-
-    txt2 = ttk.ScrolledText(master=res_group, height=8, width=55)
-    txt2.pack(side=TOP, anchor=W, pady=5, fill=BOTH, expand=YES)
-
-    tv2 = ttk.Treeview(master=res_group, columns=[0, 1], show=HEADINGS, height=8)
-    for i in range(5):
-        tv2.insert("", END, values=(" ", " "))
-
-    tv2.heading(0, text="物品")
-    tv2.heading(1, text="数量")
-    tv2.column(0, width=150)
-    tv2.column(1, width=150, anchor=CENTER)
-    tv2.pack(side=TOP, anchor=W, fill=BOTH, pady=5, expand=YES)
-
-    icons_frame = ttk.Labelframe(master=res_group, text="最后获取的物品", padding=5)
-    icons_frame.pack(fill=BOTH, expand=YES, pady=0, side=BOTTOM, anchor=W, ipady=65)
-    icons_frame.pack_propagate(0)
-    fr = ttk.Frame(master=icons_frame)
-    fr.pack(side=LEFT, anchor=W)
-    fr.pack_propagate(0)
-    global item_labels2
-    item_labels2 = [ttk.Label(master=fr, image="", width=2) for j in range(11)]
-    for i, l in enumerate(item_labels2):
-        l.grid(row=0, column=i, padx=10, pady=4, sticky=W)
-    
-    """
-
     button_frame = ttk.Frame(master=lframe, padding=3)
     button_frame.pack(side=TOP, expand=YES)
 
